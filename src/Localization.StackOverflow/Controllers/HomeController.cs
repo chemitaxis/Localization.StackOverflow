@@ -1,26 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Localization.StackOverflow.Resources;
+﻿using Microsoft.AspNet.Http.Features;
+using Microsoft.AspNet.Localization;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace Localization.StackOverflow.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IHtmlLocalizer<Startup> _stringLocalizer;
+        private readonly IStringLocalizer<Startup> _stringLocalizer;
 
-        public HomeController(IHtmlLocalizer<Startup> stringLocalizer)
+        public HomeController(IStringLocalizer<Startup> stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
         }
 
         public IActionResult Index()
         {
-            var value = _stringLocalizer["Hello"].Value;
 
+            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
+            var requestCulture = requestCultureFeature.RequestCulture;
+
+            var provider = requestCultureFeature.Provider.GetType().Name;
+
+            var value = _stringLocalizer["Hello"];
+
+           
 
             return View();
         }

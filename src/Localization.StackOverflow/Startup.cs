@@ -52,11 +52,11 @@ namespace Localization.StackOverflow
 
             // Add MVC services to the services container.
 
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddLocalization(options => options.ResourcesPath = "My/Resources");
 
             services
                 .AddMvc()
-                .AddViewLocalization(options => options.ResourcesPath = "Resources")
+                .AddViewLocalization(options => options.ResourcesPath = "My/Resources")
                 .AddDataAnnotationsLocalization();
 
             // Add application services.
@@ -110,7 +110,7 @@ namespace Localization.StackOverflow
                 SupportedUICultures = new List<CultureInfo>
                 {
                     new CultureInfo("en-US"),
-                   new CultureInfo("es-ES")
+                    new CultureInfo("es-ES")
 
                 }
             };
