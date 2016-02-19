@@ -117,14 +117,15 @@ namespace Localization.StackOverflow
                 },
                 RequestCultureProviders = new List<IRequestCultureProvider>
                 {
-                    new AcceptLanguageHeaderRequestCultureProvider
-                    {
-                        
-                    },
                     new CookieRequestCultureProvider
                     {
                         CookieName = "_cultureLocalizationStackOverflow"
+                    },
+                    new AcceptLanguageHeaderRequestCultureProvider
+                    {
+
                     }
+                    
                 }
             };
 

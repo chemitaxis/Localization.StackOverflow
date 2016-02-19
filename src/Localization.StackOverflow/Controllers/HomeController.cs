@@ -6,6 +6,7 @@ using Microsoft.Extensions.Localization;
 using Localization.StackOverflow.Helper;
 using Microsoft.AspNet.Http;
 using System;
+using Microsoft.Extensions.WebEncoders;
 
 namespace Localization.StackOverflow.Controllers
 {
@@ -15,10 +16,12 @@ namespace Localization.StackOverflow.Controllers
         public const string CultureCookieName = "_cultureLocalizationStackOverflow";
 
         private readonly IStringLocalizer<StackOverflowLoc> _stringLocalizer;
+        private readonly IHtmlEncoder _encoder;
 
-        public HomeController(IStringLocalizer<StackOverflowLoc> stringLocalizer)
+        public HomeController(IStringLocalizer<StackOverflowLoc> stringLocalizer, IHtmlEncoder encoder)
         {
             _stringLocalizer = stringLocalizer;
+            _encoder = encoder;
         }
 
         public IActionResult Index()
@@ -32,7 +35,8 @@ namespace Localization.StackOverflow.Controllers
         [HttpPost]
         public IActionResult SetCulture(string culture)
         {
-            HttpContext.Response.Cookies.Append(CultureCookieName, culture, new CookieOptions
+
+           HttpContext.Response.Cookies.Append(CultureCookieName, culture, new CookieOptions
             {
                 Expires = DateTime.Now.AddYears(1),
                 Secure = false,
