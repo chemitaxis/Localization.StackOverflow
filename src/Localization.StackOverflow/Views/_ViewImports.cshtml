@@ -1,6 +1,12 @@
-﻿@using Localization.StackOverflow
+﻿@using System.Threading.Tasks
+@using Localization.StackOverflow
 @using Localization.StackOverflow.Models
+@using Localization.StackOverflow.Resources
 @using Localization.StackOverflow.ViewModels.Account
 @using Localization.StackOverflow.ViewModels.Manage
 @using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Mvc.Localization
+@using Microsoft.Extensions.Localization
 @addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
+@inject IStringLocalizer<StackOverflowLoc> TranslateLocalizer
+@inject IViewLocalizer LocString

@@ -1,16 +1,22 @@
-﻿using Microsoft.AspNet.Http.Features;
-using Microsoft.AspNet.Localization;
+﻿using System.Globalization;
+using Localization.StackOverflow.Filters;
+using Localization.StackOverflow.Resources;
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Localization.StackOverflow.Helper;
+using Microsoft.AspNet.Http;
+using System;
 
 namespace Localization.StackOverflow.Controllers
 {
+    //[ServiceFilter(typeof(LanguageCookieActionFilter))]
     public class HomeController : Controller
     {
-        private readonly IStringLocalizer<Startup> _stringLocalizer;
+        public const string CultureCookieName = "_cultureLocalizationStackOverflow";
 
-        public HomeController(IStringLocalizer<Startup> stringLocalizer)
+        private readonly IStringLocalizer<StackOverflowLoc> _stringLocalizer;
+
+        public HomeController(IStringLocalizer<StackOverflowLoc> stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
         }
@@ -18,30 +24,21 @@ namespace Localization.StackOverflow.Controllers
         public IActionResult Index()
         {
 
-            var requestCultureFeature = HttpContext.Features.Get<IRequestCultureFeature>();
-            var requestCulture = requestCultureFeature.RequestCulture;
-
-            var provider = requestCultureFeature.Provider.GetType().Name;
-
-            var value = _stringLocalizer["Hello"];
-
-           
-
+            ViewData["Hello"] = _stringLocalizer["Hello"];
+            ViewData["Parameter"] = _stringLocalizer["Parameter"];
             return View();
         }
 
-        public IActionResult About()
+        [HttpPost]
+        public IActionResult SetCulture(string culture)
         {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
+            HttpContext.Response.Cookies.Append(CultureCookieName, culture, new CookieOptions
+            {
+                Expires = DateTime.Now.AddYears(1),
+                Secure = false,
+                
+            });
+            return RedirectToAction("Index");
         }
 
         public IActionResult Error()

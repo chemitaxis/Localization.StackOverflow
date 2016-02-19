@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+using Localization.StackOverflow.Filters;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -51,13 +49,15 @@ namespace Localization.StackOverflow
                 .AddDefaultTokenProviders();
 
             // Add MVC services to the services container.
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-            services.AddLocalization(options => options.ResourcesPath = "My/Resources");
-
+            
             services
                 .AddMvc()
-                .AddViewLocalization(options => options.ResourcesPath = "My/Resources")
+                .AddViewLocalization(options => options.ResourcesPath = "Resources")
                 .AddDataAnnotationsLocalization();
+
+            services.AddScoped<LanguageCookieActionFilter>();
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -67,7 +67,8 @@ namespace Localization.StackOverflow
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.MinimumLevel = LogLevel.Information;
+            loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
@@ -97,6 +98,7 @@ namespace Localization.StackOverflow
 
             app.UseStaticFiles();
 
+            
             app.UseIdentity();
 
             var requestLocalizationOptions = new RequestLocalizationOptions
@@ -112,8 +114,21 @@ namespace Localization.StackOverflow
                     new CultureInfo("en-US"),
                     new CultureInfo("es-ES")
 
+                },
+                RequestCultureProviders = new List<IRequestCultureProvider>
+                {
+                    new AcceptLanguageHeaderRequestCultureProvider
+                    {
+                        
+                    },
+                    new CookieRequestCultureProvider
+                    {
+                        CookieName = "_cultureLocalizationStackOverflow"
+                    }
                 }
             };
+
+
 
             app.UseRequestLocalization(requestLocalizationOptions, defaultRequestCulture: new RequestCulture("en-US"));
 
